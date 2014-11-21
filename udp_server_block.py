@@ -39,8 +39,8 @@ class UDPServer(Block):
 
     """ A block for receiving UDP data """
 
-    host = StringProperty(title="Listener Host", default="127.0.0.1")
-    port = IntProperty(title="Listener Port", default=5005)
+    host = StringProperty(title="Listener Host", default='[[NIOHOST]]')
+    port = IntProperty(title="Listener Port", allow_none=True)
     threaded = BoolProperty(title="User threads", default=False)
     packet_size = IntProperty(title="Packet size", default=8192)
 
@@ -57,8 +57,8 @@ class UDPServer(Block):
     def configure(self, context):
         super().configure(context)
         # if no port is specified, get an open one from the PortManager
-        if self.port < 0:
-            self.port = PortManager.get_port()
+        self.port = self.port or PortManager.get_port()
+
         try:
             self._server = self._create_server()
             self._server.max_packet_size = self.packet_size
