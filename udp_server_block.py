@@ -4,14 +4,13 @@
 
 """
 from socketserver import UDPServer, BaseRequestHandler, ThreadingMixIn
-from nio.common.block.base import Block
-from nio.common.discovery import Discoverable, DiscoverableType
-from nio.common.signal.base import Signal
-from nio.metadata.properties import BoolProperty
-from nio.metadata.properties.int import IntProperty
-from nio.metadata.properties.string import StringProperty
-from nio.modules.communication import PortManager
-from nio.modules.threading import spawn
+
+from nio.block.base import Block
+from nio.properties import BoolProperty
+from nio.properties.int import IntProperty
+from nio.properties.string import StringProperty
+from nio.signal.base import Signal
+from nio.util.threading.spawn import spawn
 
 
 class SingleUDPServer(UDPServer):
@@ -34,13 +33,12 @@ class UDPDataHandler(BaseRequestHandler):
         self.server.notifier(self.request[0].strip())
 
 
-@Discoverable(DiscoverableType.block)
 class UDPServer(Block):
 
     """ A block for receiving UDP data """
 
     host = StringProperty(title="Listener Host", default='[[NIOHOST]]')
-    port = IntProperty(title="Listener Port", allow_none=True)
+    port = IntProperty(title="Listener Port", allow_none=False)
     threaded = BoolProperty(title="User threads", default=False)
     packet_size = IntProperty(title="Packet size", default=8192)
 
@@ -49,23 +47,21 @@ class UDPServer(Block):
         self._server = None
 
     def _create_server(self):
-        server_class = ThreadedUDPServer if self.threaded else SingleUDPServer
-        return server_class((self.host, self.port),
+        server_class = ThreadedUDPServer if self.threaded() else SingleUDPServer
+        return server_class((self.host(), self.port()),
                             UDPDataHandler,
                             self._handle_input)
 
     def configure(self, context):
         super().configure(context)
-        # if no port is specified, get an open one from the PortManager
-        self.port = self.port or PortManager.get_port()
 
         try:
             self._server = self._create_server()
-            self._server.max_packet_size = self.packet_size
-            self._logger.info("UDP Server listening on %s:%s" %
-                              (self.host, self.port))
+            self._server.max_packet_size = self.packet_size()
+            self.logger.info("UDP Server listening on %s:%s" %
+                              (self.host(), self.port()))
         except Exception as e:
-            self._logger.error("Failed to create server - {0} : {1}".format(
+            self.logger.error("Failed to create server - {0} : {1}".format(
                 type(e).__name__, e))
             raise
 
@@ -74,16 +70,16 @@ class UDPServer(Block):
         if self._server:
             spawn(self._server.serve_forever)
         else:
-            self._logger.warning("Server did not exist, so it was not started")
+            self.logger.warning("Server did not exist, so it was not started")
 
     def stop(self):
         if self._server:
             self._server.shutdown()
-        self._logger.info("UDP Server stopped")
+        self.logger.info("UDP Server stopped")
         super().stop()
 
     def _handle_input(self, raw_data):
         if raw_data is None:
-            self._logger.warning("Receiving invalid data")
+            self.logger.warning("Receiving invalid data")
             return
         self.notify_signals([Signal({"data": raw_data})])
