@@ -1,25 +1,28 @@
 {
-  "nio/UDPServer": {
-    "Properties": {
-      "packet_size": {
-        "description": "Packet size used for reading udp socket. Defaults to 8192"
-      },
-      "port": {
-        "description": "The desired port for the server. If left unset, the block will obtain an available port from nio's PortManager."
-      },
-      "threaded": {
-        "description": "Dispatch a thread to handle every datagram received"
-      },
-      "host": {
-        "description": "The host IP for the UDP server. Defaults to '127.0.0.1'."
-      }
-    },
-    "Version": "1.0.0",
-    "Description": "This block provides a UDP server that runs inside nio.",
-    "Commands": {},
-    "Category": "Communication",
-    "Output": "Signals with data attribute containing udp raw data received",
-    "Dependencies": [],
-    "Input": ""
-  }
+    "nio/UDPServer": {
+        "Version": "1.0.0",
+        "Input": {
+            "Description": ""
+        },
+        "Properties": {
+            "host": {
+                "description": "The host IP for the UDP server. Defaults to '127.0.0.1'."
+            },
+            "packet_size": {
+                "description": "Packet size used for reading udp socket. Defaults to 8192"
+            },
+            "threaded": {
+                "description": "Dispatch a thread to handle every datagram received"
+            },
+            "port": {
+                "description": "The desired port for the server. If left unset, the block will obtain an available port from nio's PortManager."
+            }
+        },
+        "Output": {
+            "Description": "Signals with data attribute containing udp raw data received"
+        },
+        "Description": "This block provides a UDP server that runs inside nio.",
+        "Category": "Communication",
+        "Commands": {}
+    }
 }
