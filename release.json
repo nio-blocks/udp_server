@@ -1,7 +1,7 @@
 {
   "nio/UDPServer": {
-    "Version": "1.0.0",
-    "Reference": "github.com/nio-blocks/udp_server.git@v1.0.0",
-    "Language": "Python"
+    "language": "Python",
+    "version": "0.0.1",
+    "reference": "github.com/nio-blocks/udp_server.git@v0.0.1"
   }
 }
