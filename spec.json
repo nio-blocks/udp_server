@@ -1,10 +1,39 @@
 {
   "nio/UDPServer": {
-    "version": "0.0.1",
-    "description": "",
+    "version": "1.0.0",
+    "description": "Create a UDP server that runs in nio to receive data.",
+    "properties": {
+      "host": {
+        "title": "Listener Host",
+        "type": "StringType",
+        "description": "The host address for the udp server.",
+        "default": "[[NIOHOST]]"
+      },
+      "packet_size": {
+        "title": "Packet size",
+        "type": "IntType",
+        "description": "Packet size used for reading udp socket.",
+        "default": 8192
+      },
+      "port": {
+        "title": "Listener Port",
+        "type": "IntType",
+        "description": "The port for the udp server.",
+        "default": null
+      },
+      "threaded": {
+        "title": "User threads",
+        "type": "BoolType",
+        "description": "Dispatch a thread to handle every datagram received.",
+        "default": false
+      }
+    },
     "inputs": {},
-    "outputs": {},
-    "properties": {},
+    "outputs": {
+      "default": {
+        "description": "A signal with attribute `data` for each received data packet."
+      }
+    },
     "commands": {}
   }
 }

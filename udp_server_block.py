@@ -1,14 +1,8 @@
-"""
-
-  UDP Server
-
-"""
 from socketserver import UDPServer, BaseRequestHandler, ThreadingMixIn
 
-from nio.block.base import Block
-from nio.properties import BoolProperty
-from nio.properties.int import IntProperty
-from nio.properties.string import StringProperty
+from nio import GeneratorBlock
+from nio.properties import \
+    BoolProperty, IntProperty, StringProperty, VersionProperty
 from nio.signal.base import Signal
 from nio.util.threading.spawn import spawn
 
@@ -33,10 +27,9 @@ class UDPDataHandler(BaseRequestHandler):
         self.server.notifier(self.request[0].strip())
 
 
-class UDPServer(Block):
+class UDPServer(GeneratorBlock):
 
-    """ A block for receiving UDP data """
-
+    version = VersionProperty("1.0.0")
     host = StringProperty(title="Listener Host", default='[[NIOHOST]]')
     port = IntProperty(title="Listener Port", allow_none=False)
     threaded = BoolProperty(title="User threads", default=False)
@@ -47,7 +40,8 @@ class UDPServer(Block):
         self._server = None
 
     def _create_server(self):
-        server_class = ThreadedUDPServer if self.threaded() else SingleUDPServer
+        server_class = \
+            ThreadedUDPServer if self.threaded() else SingleUDPServer
         return server_class((self.host(), self.port()),
                             UDPDataHandler,
                             self._handle_input)
@@ -58,8 +52,8 @@ class UDPServer(Block):
         try:
             self._server = self._create_server()
             self._server.max_packet_size = self.packet_size()
-            self.logger.info("UDP Server listening on %s:%s" %
-                              (self.host(), self.port()))
+            self.logger.info("UDP Server listening on {}:{}"
+                             .format(self.host(), self.port()))
         except Exception as e:
             self.logger.error("Failed to create server - {0} : {1}".format(
                 type(e).__name__, e))
