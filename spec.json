@@ -2,6 +2,9 @@
   "nio/UDPServer": {
     "version": "1.0.0",
     "description": "Create a UDP server that runs in nio to receive data.",
+    "categories": [
+      "Communication"
+    ],
     "properties": {
       "host": {
         "title": "Listener Host",
